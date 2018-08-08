@@ -1,0 +1,5 @@
+<div class="jumbotron">
+  <h2>Hello World, from <%= @messenger %>!</h2>
+
+  <p><a href="<%= page_path(@conn, :index, query: "param") %>">To the Welcome Page!</a></p>
+</div>

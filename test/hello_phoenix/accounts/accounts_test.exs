@@ -17,10 +17,12 @@ defmodule HelloPhoenix.AccountsTest do
         |> Accounts.create_user()
 
       user
+      |> Map.merge(%{credential: nil})
     end
 
     test "list_users/0 returns all users" do
-      user = user_fixture()
+      user =
+        user_fixture()
       assert Accounts.list_users() == [user]
     end
 
@@ -68,14 +70,18 @@ defmodule HelloPhoenix.AccountsTest do
   describe "credentials" do
     alias HelloPhoenix.Accounts.Credential
 
+    @valid_user_attrs %{name: "some name", username: "some username"}
     @valid_attrs %{email: "some email"}
     @update_attrs %{email: "some updated email"}
     @invalid_attrs %{email: nil}
 
     def credential_fixture(attrs \\ %{}) do
+      {:ok, user} = Accounts.create_user(@valid_user_attrs)
+
       {:ok, credential} =
         attrs
         |> Enum.into(@valid_attrs)
+        |> Enum.into(%{user_id: user.id})
         |> Accounts.create_credential()
 
       credential
@@ -92,7 +98,13 @@ defmodule HelloPhoenix.AccountsTest do
     end
 
     test "create_credential/1 with valid data creates a credential" do
-      assert {:ok, %Credential{} = credential} = Accounts.create_credential(@valid_attrs)
+      {:ok, user} = Accounts.create_user(@valid_user_attrs)
+      
+      credential_attr = 
+        @valid_attrs
+        |> Enum.into(%{user_id: user.id})
+
+      assert {:ok, %Credential{} = credential} = Accounts.create_credential(credential_attr)
       assert credential.email == "some email"
     end
 

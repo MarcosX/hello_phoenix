@@ -14,7 +14,7 @@ defmodule HelloPhoenix.Accounts.Credential do
   @doc false
   def changeset(credential, attrs) do
     credential
-    |> cast(attrs, [:email])
+    |> cast(attrs, [:email, :user_id])
     |> validate_required([:email])
     |> unique_constraint(:email)
   end
